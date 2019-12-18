@@ -60,16 +60,33 @@ class CassandraWrite extends AkkaStreamlet {
     implicit val session: Session = getCassandraConnection()
 
     def runnableGraph() = {
-
       sourceWithOffsetContext(in)
-        .map(message ⇒ {
-          log.info("Prepping to Write to Cassandra: " + message)
+        .map(x ⇒ {
+          log.info("Prepping to Write to Cassandra: " + x.word)
 
-          session.execute("INSERT INTO learnlightbend.cloudflow_test(id, lastname) VALUES (uuid(), '" + message.word + "');")
-          log.info("Done Writing to Cassandra: " + message.word)
+          x
+        })
+        .asSource
+        .map { case (td, offset) ⇒ TestDataEnvelope(td, offset) }
+        .via(cassFlow)
+        .asSourceWithContext(td ⇒ td.offset)
+        .map(x ⇒ {
+          log.info("Written to Cassandra: " + x)
         })
         .to(Sink.ignore)
     }
+
+    //    def runnableGraph() = {
+    //
+    //      sourceWithOffsetContext(in)
+    //        .map(message ⇒ {
+    //          log.info("Prepping to Write to Cassandra: " + message)
+    //
+    //          session.execute("INSERT INTO learnlightbend.cloudflow_test(id, lastname) VALUES (uuid(), '" + message.word + "');")
+    //          log.info("Done Writing to Cassandra: " + message.word)
+    //        })
+    //        .to(Sink.ignore)
+    //    }
 
     def setupCassandra(): Unit = {
       val cassandraFactory = new EmbeddedCassandraFactory()
