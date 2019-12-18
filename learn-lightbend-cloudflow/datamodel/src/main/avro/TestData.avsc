@@ -1,0 +1,20 @@
+{
+    "namespace": "learnlightbend.data",
+    "type": "record",
+    "name": "TestData",
+    "fields":[
+         {
+            "name": "word",
+            "type": "string"
+         },
+         {
+             "name": "count",
+             "type": "long"
+          },
+         {
+             "name": "ts",
+             "type": "long"
+          }
+    ]
+}
+

@@ -37,6 +37,8 @@ lazy val akkaStreams= appModule("akka-streams")
       libraryDependencies ++= Seq(
         "com.typesafe.akka"         %% "akka-http-spray-json"   % "10.1.10",
         "ch.qos.logback"            %  "logback-classic"        % "1.2.3",
+        "com.lightbend.akka" %% "akka-stream-alpakka-cassandra" % "1.1.2",
+        "com.github.nosan" % "embedded-cassandra" % "3.0.1",
         "org.scalatest"             %% "scalatest"              % "3.0.8"    % "test"
       )
     )

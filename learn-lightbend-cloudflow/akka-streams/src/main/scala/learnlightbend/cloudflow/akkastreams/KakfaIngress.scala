@@ -12,12 +12,12 @@ import net.manub.embeddedkafka.{ EmbeddedKafka, EmbeddedKafkaConfig }
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.serialization.{ ByteArrayDeserializer, StringDeserializer }
 
-class KakfaIngress extends AkkaServerStreamlet {
+class KakfaIngress extends AkkaStreamlet {
 
   //\\//\\//\\ INLETS //\\//\\//\\
 
   //\\//\\//\\ OUTLETS //\\//\\//\\
-  val out = AvroOutlet[AggregatedCallStats]("bla")
+  val out = AvroOutlet[TestData]("out")
 
   //\\//\\//\\ SHAPE //\\//\\//\\
   final override val shape = StreamletShape(out)
@@ -26,7 +26,7 @@ class KakfaIngress extends AkkaServerStreamlet {
   final override def createLogic = new RunnableGraphStreamletLogic {
 
     val TopicName = "test-topic"
-    setupLocalKafka()
+    setupLocalKafkaTopic()
 
     val consumerSettings =
       ConsumerSettings(system, new StringDeserializer, new StringDeserializer)
@@ -44,10 +44,10 @@ class KakfaIngress extends AkkaServerStreamlet {
       .committableSource(consumerSettings, Subscriptions.topics(TopicName)).map(x ⇒ {
         log.info("Read Message from kafka: " + x.record.value())
 
-        AggregatedCallStats(0L, 0L, 0.0, 0L)
+        TestData(x.record.value(), 0L, 0L)
       }).to(plainSink(out))
 
-    private def setupLocalKafka(): Unit = {
+    private def setupLocalKafkaTopic(): Unit = {
       if (EmbeddedKafka.isRunning) {
         implicit val kafkaConfig = EmbeddedKafkaConfig(kafkaPort = 9092)
         EmbeddedKafka.createCustomTopic(TopicName)
