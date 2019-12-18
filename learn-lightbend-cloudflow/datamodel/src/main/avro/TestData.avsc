@@ -3,16 +3,16 @@
     "type": "record",
     "name": "TestData",
     "fields":[
-         {
+          {
+            "name": "ts",
+            "type": "long"
+          },
+          {
             "name": "word",
             "type": "string"
          },
          {
-             "name": "count",
-             "type": "long"
-          },
-         {
-             "name": "ts",
+             "name": "num",
              "type": "long"
           }
     ]

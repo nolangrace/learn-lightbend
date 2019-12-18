@@ -1,7 +1,7 @@
 {
     "namespace": "learnlightbend.data",
     "type": "record",
-    "name": "AggregatedCallStats",
+    "name": "AggregatedTestData",
     "fields":[
          {
             "name": "startTime",
@@ -12,12 +12,12 @@
              "type": "long"
           },
          {
-             "name": "avgCallDuration",
+             "name": "count",
              "type": "double"
           },
           {
-              "name": "totalCallDuration",
-              "type": "long"
+              "name": "average",
+              "type": "double"
            }
     ]
 }

@@ -55,6 +55,8 @@ class KakfaIngress extends AkkaStreamlet {
         .withGroupId("group1")
         .withProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest")
 
+    val r = scala.util.Random
+
     //    def runnableGraph = Source(0 to 100).map(x ⇒ {
     //      log.info("Current NUm: " + x)
     //
@@ -65,7 +67,7 @@ class KakfaIngress extends AkkaStreamlet {
       .committableSource(consumerSettings, Subscriptions.topics(TopicName)).map(x ⇒ {
         log.info("Read Message from kafka: " + x.record.value())
 
-        TestData(x.record.value(), 0L, 0L)
+        TestData(System.currentTimeMillis(), "Test", r.nextInt(10))
       }).to(plainSink(out))
 
     private def setupAndFeedKafka(): Unit = {
