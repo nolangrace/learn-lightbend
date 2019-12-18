@@ -18,6 +18,14 @@ import learnlightbend.data.TestData
 
 class CassandraWrite extends AkkaStreamlet {
 
+  val EmbeddedCassandraConf = BooleanConfigParameter(
+    "embedded-cassandra",
+    " ",
+    Some(false)
+  )
+
+  override def configParameters = Vector(EmbeddedCassandraConf)
+
   //\\//\\//\\ INLETS //\\//\\//\\
   val in = AvroInlet[TestData]("in")
 
@@ -26,6 +34,8 @@ class CassandraWrite extends AkkaStreamlet {
 
   //\\//\\//\\ LOGIC //\\//\\//\\
   final override def createLogic = new RunnableGraphStreamletLogic {
+
+    val embeddedCassandra = streamletConfig.getBoolean(EmbeddedCassandraConf.key)
 
     val cassandraPort = 9042
     val cassandraHost = "localhost"
@@ -66,22 +76,25 @@ class CassandraWrite extends AkkaStreamlet {
     //    }
 
     def setupCassandra(): Unit = {
-      val cassandraFactory = new EmbeddedCassandraFactory()
-      cassandraFactory.setPort(cassandraPort)
 
-      val cassandra = cassandraFactory.create()
-      cassandra.start()
-      val cassandraConnectionFactory = new DefaultCassandraConnectionFactory()
-      try {
-        val connection = cassandraConnectionFactory.create(cassandra)
-        connection.execute("CREATE KEYSPACE learnlightbend WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 };")
+      if (embeddedCassandra) {
+        val cassandraFactory = new EmbeddedCassandraFactory()
+        cassandraFactory.setPort(cassandraPort)
 
-        connection.execute("CREATE TABLE learnlightbend.cloudflow_test ( id UUID PRIMARY KEY, lastname text );")
-      } finally {
-        //        cassandra.stop()
+        val cassandra = cassandraFactory.create()
+        cassandra.start()
+        val cassandraConnectionFactory = new DefaultCassandraConnectionFactory()
+        try {
+          val connection = cassandraConnectionFactory.create(cassandra)
+          connection.execute("CREATE KEYSPACE learnlightbend WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 };")
+
+          connection.execute("CREATE TABLE learnlightbend.cloudflow_test ( id UUID PRIMARY KEY, lastname text );")
+        } finally {
+          //        cassandra.stop()
+        }
+
+        log.info("Cassandra Started!")
       }
-
-      log.info("Cassandra Started!")
     }
   }
 }

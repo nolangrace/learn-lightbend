@@ -22,7 +22,8 @@ lazy val learnlightbendcloudflow = appModule("learn-lightbend-cloudflow")
   .enablePlugins(CloudflowApplicationPlugin)
   .settings(commonSettings)
   .settings(
-    name := "learn-lightbend-cloudflow"
+    name := "learn-lightbend-cloudflow",
+    runLocalConfigFile := Some("learn-lightbend-cloudflow/main/resources/local.conf")
   )
   .dependsOn(akkaStreams, sparkAggregation)
 //end::docs-CloudflowApplicationPlugin-example[]
