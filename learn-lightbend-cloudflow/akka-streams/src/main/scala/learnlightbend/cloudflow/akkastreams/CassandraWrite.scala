@@ -4,13 +4,14 @@ import java.io.File
 import java.util.UUID
 
 import akka.NotUsed
+import akka.kafka.ConsumerMessage.CommittableOffset
 import akka.stream.alpakka.cassandra.scaladsl.CassandraFlow
 import akka.stream.scaladsl.Sink
 import cloudflow.akkastream._
-import cloudflow.akkastream.scaladsl.{ FlowWithOffsetContext, RunnableGraphStreamletLogic }
+import cloudflow.akkastream.scaladsl.{FlowWithOffsetContext, RunnableGraphStreamletLogic}
 import cloudflow.streamlets._
 import cloudflow.streamlets.avro._
-import com.datastax.driver.core.{ Cluster, PreparedStatement, Session }
+import com.datastax.driver.core.{Cluster, PreparedStatement, Session}
 import com.github.nosan.embedded.cassandra.EmbeddedCassandraFactory
 import com.github.nosan.embedded.cassandra.api.connection.DefaultCassandraConnectionFactory
 import com.github.nosan.embedded.cassandra.api.cql.CqlDataSet
@@ -58,6 +59,12 @@ class CassandraWrite extends AkkaStreamlet {
     log.info("Cassandra Config host: " + cassandraHost + " Port: " + cassandraPort + " password: " + cassandraPassword)
 
     implicit val session: Session = getCassandraConnection()
+
+    case class TestDataEnvelope(data: TestData, offset: CommittableOffset)
+
+    val preparedStatement = session.prepare(s"INSERT INTO learnlightbend.cloudflow_test(id, lastname) VALUES (uuid(), ?);")
+    val statementBinder = (message: TestDataEnvelope, statement: PreparedStatement) ⇒ statement.bind(message.data.word)
+    val cassFlow = CassandraFlow.createWithPassThrough(3, preparedStatement, statementBinder)
 
     def runnableGraph() = {
       sourceWithOffsetContext(in)
