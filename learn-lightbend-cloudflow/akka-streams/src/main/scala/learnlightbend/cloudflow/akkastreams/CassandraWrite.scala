@@ -8,10 +8,10 @@ import akka.kafka.ConsumerMessage.CommittableOffset
 import akka.stream.alpakka.cassandra.scaladsl.CassandraFlow
 import akka.stream.scaladsl.Sink
 import cloudflow.akkastream._
-import cloudflow.akkastream.scaladsl.{FlowWithOffsetContext, RunnableGraphStreamletLogic}
+import cloudflow.akkastream.scaladsl.{ FlowWithOffsetContext, RunnableGraphStreamletLogic }
 import cloudflow.streamlets._
 import cloudflow.streamlets.avro._
-import com.datastax.driver.core.{Cluster, PreparedStatement, Session}
+import com.datastax.driver.core.{ Cluster, PreparedStatement, Session }
 import com.github.nosan.embedded.cassandra.EmbeddedCassandraFactory
 import com.github.nosan.embedded.cassandra.api.connection.DefaultCassandraConnectionFactory
 import com.github.nosan.embedded.cassandra.api.cql.CqlDataSet
@@ -80,7 +80,7 @@ class CassandraWrite extends AkkaStreamlet {
         .map(x ⇒ {
           log.info("Written to Cassandra: " + x)
         })
-        .to(Sink.ignore)
+        .to(sinkWithOffsetContext)
     }
 
     //    def runnableGraph() = {

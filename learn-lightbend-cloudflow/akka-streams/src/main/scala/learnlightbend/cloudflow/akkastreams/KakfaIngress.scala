@@ -64,7 +64,8 @@ class KakfaIngress extends AkkaStreamlet {
     //    }).to(plainSink(out))
 
     def runnableGraph = Consumer
-      .committableSource(consumerSettings, Subscriptions.topics(TopicName)).map(x ⇒ {
+      .committableSource(consumerSettings, Subscriptions.topics(TopicName))
+      .map(x ⇒ {
         log.info("Read Message from kafka: " + x.record.value())
 
         TestData(System.currentTimeMillis(), "Test", r.nextInt(10))
