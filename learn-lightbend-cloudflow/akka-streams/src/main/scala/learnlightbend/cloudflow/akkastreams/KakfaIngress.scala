@@ -88,6 +88,7 @@ class KakfaIngress extends AkkaStreamlet {
 import akka.actor.Actor
 import akka.actor.Props
 import akka.event.Logging
+import scala.concurrent.duration._
 
 case class StartFeed(host: String, port: String, TopicName: String)
 
@@ -102,8 +103,8 @@ class FeedKafkaActor extends Actor {
         ProducerSettings(context.system, new StringSerializer, new StringSerializer)
           .withBootstrapServers(host + ":" + port)
 
-      Source(1 to 100)
-        .map(_.toString)
+      Source
+        .tick(initialDelay = 1.second, interval = 1.second, "message!")
         .map(value ⇒ new ProducerRecord[String, String](topicName, value))
         .runWith(Producer.plainSink(producerSettings))
 
