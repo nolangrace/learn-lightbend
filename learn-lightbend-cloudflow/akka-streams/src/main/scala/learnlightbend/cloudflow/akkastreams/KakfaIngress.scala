@@ -5,10 +5,10 @@ import akka.kafka.{ ConsumerSettings, ProducerSettings, Subscriptions }
 import akka.kafka.scaladsl.{ Consumer, Producer }
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.Source
-import cloudflow.akkastream._
-import cloudflow.akkastream.scaladsl.RunnableGraphStreamletLogic
-import cloudflow.streamlets._
-import cloudflow.streamlets.avro.AvroOutlet
+import pipelines.akkastream._
+import pipelines.akkastream.scaladsl.RunnableGraphStreamletLogic
+import pipelines.streamlets._
+import pipelines.streamlets.avro.AvroOutlet
 import learnlightbend.data._
 import net.manub.embeddedkafka.{ EmbeddedKafka, EmbeddedKafkaConfig }
 import org.apache.kafka.clients.consumer.ConsumerConfig
@@ -17,15 +17,25 @@ import org.apache.kafka.common.serialization.{ ByteArrayDeserializer, StringDese
 
 class KakfaIngress extends AkkaStreamlet {
 
-  implicit val kafkaConfig = EmbeddedKafkaConfig(kafkaPort = 9092)
-
   val EmbeddedKafkaConf = BooleanConfigParameter(
     "embedded-kafka",
     " ",
     Some(false)
   )
 
-  override def configParameters = Vector(EmbeddedKafkaConf)
+  val kafkaHostnameConf = StringConfigParameter(
+    "kafka-hostname",
+    " ",
+    Some("localhost")
+  )
+
+  val kafkaPortConf = IntegerConfigParameter(
+    "kafka-port",
+    " ",
+    Some(9092)
+  )
+
+  override def configParameters = Vector(EmbeddedKafkaConf, kafkaHostnameConf, kafkaPortConf)
 
   //\\//\\//\\ INLETS //\\//\\//\\
 
@@ -44,8 +54,12 @@ class KakfaIngress extends AkkaStreamlet {
 
     val TopicName = "test-topic"
 
-    val kafkaHost = "localhost"
-    val kafkaPort = "9092"
+    val kafkaHost = streamletConfig.getString(kafkaHostnameConf.key)
+    val kafkaPort = streamletConfig.getInt(kafkaPortConf.key)
+
+    log.info("Configurations Kafka hostname: " + kafkaHost + " Kafka Port: " + kafkaPort)
+
+    implicit val kafkaConfig = EmbeddedKafkaConfig(kafkaPort = kafkaPort)
 
     setupAndFeedKafka()
 
@@ -87,7 +101,7 @@ import akka.actor.Actor
 import akka.actor.Props
 import akka.event.Logging
 
-case class StartFeed(host: String, port: String, TopicName: String)
+case class StartFeed(host: String, port: Int, TopicName: String)
 
 class FeedKafkaActor extends Actor {
   val log = Logging(context.system, this)

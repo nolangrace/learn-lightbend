@@ -4,11 +4,11 @@ import org.apache.spark.sql.Dataset
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types._
 
-import cloudflow.streamlets._
-import cloudflow.streamlets.avro._
-import cloudflow.spark.{ SparkStreamlet, SparkStreamletLogic }
+import pipelines.streamlets._
+import pipelines.streamlets.avro._
+import pipelines.spark.{ SparkStreamlet, SparkStreamletLogic }
 import org.apache.spark.sql.streaming.OutputMode
-import cloudflow.spark.sql.SQLImplicits._
+import pipelines.spark.sql.SQLImplicits._
 import org.apache.log4j.{ Level, Logger }
 
 import learnlightbend.data._

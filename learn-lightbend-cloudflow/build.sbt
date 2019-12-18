@@ -19,7 +19,7 @@ lazy val root =
 
 //tag::docs-CloudflowApplicationPlugin-example[]
 lazy val learnlightbendcloudflow = appModule("learn-lightbend-cloudflow")
-  .enablePlugins(CloudflowApplicationPlugin)
+  .enablePlugins(PipelinesApplicationPlugin)
   .settings(commonSettings)
   .settings(
     name := "learn-lightbend-cloudflow",
@@ -29,10 +29,10 @@ lazy val learnlightbendcloudflow = appModule("learn-lightbend-cloudflow")
 //end::docs-CloudflowApplicationPlugin-example[]
 
 lazy val datamodel = appModule("datamodel")
-  .enablePlugins(CloudflowLibraryPlugin)
+  .enablePlugins(PipelinesLibraryPlugin)
 
 lazy val akkaStreams= appModule("akka-streams")
-    .enablePlugins(CloudflowAkkaStreamsLibraryPlugin)
+    .enablePlugins(PipelinesAkkaStreamsLibraryPlugin)
     .settings(
       commonSettings,
       libraryDependencies ++= Seq(
@@ -46,7 +46,7 @@ lazy val akkaStreams= appModule("akka-streams")
   .dependsOn(datamodel)
 
 lazy val sparkAggregation = appModule("spark-aggregation")
-    .enablePlugins(CloudflowSparkLibraryPlugin)
+    .enablePlugins(PipelinesSparkLibraryPlugin)
     .settings(
       commonSettings,
       Test / parallelExecution := false,
