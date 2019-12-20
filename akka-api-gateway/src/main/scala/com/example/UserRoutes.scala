@@ -12,7 +12,7 @@ import com.example.actor.SessionActor._
 import akka.actor.typed.ActorSystem
 import akka.actor.typed.scaladsl.ActorContext
 import akka.util.Timeout
-import com.example.actor.{SessionActor, ShoppingCartConnectionActor, Simulator, User, Users, start}
+import com.example.actor.{SessionActor, ShoppingCartConnectionActor, Simulator, User, Users, simulatorStart}
 import akka.actor.typed.scaladsl.AskPattern._
 import com.example.inventory.grpc.ItemRequest
 import akka.actor.typed.scaladsl.adapter._
@@ -36,7 +36,7 @@ class UserRoutes(context:ActorContext[Nothing])(implicit val system: ActorSystem
   val shoppingCartConActor: ActorRef = context.actorOf(Props[ShoppingCartConnectionActor], "shopping-cart-connection")
 
   val simulationActor: ActorRef = context.actorOf(Props[Simulator], "Simulator")
-  simulationActor ! start(shoppingCartConActor)
+  simulationActor ! simulatorStart(shoppingCartConActor)
 
   def getItems(): Future[ResponsePackage] = {
     val sessionId = UUID.randomUUID().toString

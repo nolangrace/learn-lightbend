@@ -3,8 +3,9 @@ lazy val akkaHttpVersion = "10.1.11"
 lazy val akkaVersion    = "2.6.1"
 lazy val akkaGrpcVersion = "0.7.3"
 
-
 enablePlugins(AkkaGrpcPlugin)
+
+version := "1.6"
 
 // Add the Cinnamon Agent for run and test
 cinnamon in run := true
@@ -34,6 +35,7 @@ lazy val root = (project in file("."))
       Cinnamon.library.cinnamonAkkaStream,
       Cinnamon.library.cinnamonAkkaHttp,
       Cinnamon.library.cinnamonPrometheus,
+      Cinnamon.library.cinnamonPrometheusHttpServer,
       Cinnamon.library.cinnamonPrometheusHttpServer,
 
       "com.typesafe.akka" %% "akka-http-testkit"        % akkaHttpVersion % Test,

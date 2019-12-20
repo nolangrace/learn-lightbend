@@ -11,14 +11,18 @@ import akka.event.Logging
 import akka.stream.ActorMaterializer
 import akka.util.Timeout
 import com.example.actor.SessionActor.ResponsePackage
-case class start(shoppingCartConActor: ActorRef)
+
+import scala.concurrent.duration._
+
+
+case class simulatorStart(shoppingCartConActor: ActorRef)
 
 class Simulator extends Actor {
   val log = Logging(context.system, this)
 
   override def receive: Receive = {
 
-    case start(shoppingCartConActor) => {
+    case simulatorStart(shoppingCartConActor) => {
 
       log.info("Start")
 
@@ -26,8 +30,10 @@ class Simulator extends Actor {
       implicit val sched = context.system.toTyped.scheduler
       implicit val sys = context.system
 
-      Source.repeat(1).map(x=> {
-        log.info("Creating Session")
+      Source.repeat(1)
+        .throttle(1000, 1.second)
+        .map(x=> {
+//        log.info("Creating Session")
 
         val sessionId = UUID.randomUUID().toString
         val sessionActorSystem = context.spawn(SessionActor(), "session-"+sessionId)

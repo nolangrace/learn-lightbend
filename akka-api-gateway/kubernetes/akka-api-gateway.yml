@@ -25,7 +25,7 @@ spec:
       restartPolicy: Always
       containers:
         - name: akkaapigateway
-          image: "nolangrace/akka-api-gateway:0.1.0-SNAPSHOT"
+          image: "nolangrace/akka-api-gateway:1.6"
           command: ["/opt/docker/bin/quickstart-app"]
           imagePullPolicy: IfNotPresent
           ports:
