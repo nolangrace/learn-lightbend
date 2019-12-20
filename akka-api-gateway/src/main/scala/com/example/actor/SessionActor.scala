@@ -26,22 +26,31 @@ object SessionActor {
   def apply(): Behavior[Command] = session(responses = List[ItemReply](), 0, null)
 
   def session(responses: List[ItemReply], numberOfRequests:Int, replyTo:ActorRef[ResponsePackage]): Behavior[Command] =
-    Behaviors.receiveMessage {
-      case SendRequest(r, requestsNum, connectionActor, sessionId) =>
+    Behaviors.setup { context =>
 
-        (0 to requestsNum).toList
-          .map ( _ => connectionActor ! ItemRequest("123", sessionId))
+      Behaviors.receiveMessage {
+        case SendRequest(r, requestsNum, connectionActor, sessionId) =>
 
-        SessionActor.session(responses, numberOfRequests, r)
-      case RequestResponse(reply) =>
+          println("session ID: " + sessionId + " Actor id: "+context.self.path.toStringWithoutAddress+" ReplyTO:"+r.path)
 
-        val newResponses = responses ::: List[ItemReply](reply)
+          (1 to requestsNum).toList
+            .map(_ => connectionActor ! ItemRequest("123", context.self.path.toStringWithoutAddress))
 
-        if(newResponses.size >= numberOfRequests){
-          replyTo ! ResponsePackage(newResponses.size)
-        }
+          SessionActor.session(responses, requestsNum, r)
+        case RequestResponse(reply) =>
+          val newResponses = responses ::: List(reply)
 
-        SessionActor.session(newResponses, numberOfRequests, replyTo)
+
+          if (newResponses.size == numberOfRequests) {
+            replyTo ! ResponsePackage(newResponses.size)
+
+            println("Session Completed: Responses: "+newResponses.size+" total: "+numberOfRequests)
+
+            Behaviors.stopped
+          }
+
+          SessionActor.session(newResponses, numberOfRequests, replyTo)
+      }
     }
 }
 //#user-registry-actor

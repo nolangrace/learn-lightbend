@@ -13,7 +13,7 @@ class InventoryServiceImpl(implicit mat: Materializer) extends InventoryService 
   override def streamItems(in: Source[ItemRequest, NotUsed]): Source[ItemReply, NotUsed] = {
         println(s"sayHello to stream...")
         in.map(request => {
-          println(s"hello, ${request.sessionId}")
+          println(s"Request: ${request.sessionId}")
           ItemReply(1000, request.sessionId)
         })
       }

@@ -33,7 +33,7 @@ object QuickstartApp {
     //#server-bootstrapping
     val rootBehavior = Behaviors.setup[Nothing] { context =>
 
-      val routes = new UserRoutes()(context.system)
+      val routes = new UserRoutes(context)(context.system)
       startHttpServer(routes.userRoutes, context.system)
 
       Behaviors.empty
