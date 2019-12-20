@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.example.inventory.grpc";
+option java_outer_classname = "InventoryProto";
+
+package inventory;
+
+service InventoryService {
+//    rpc GetItem (ItemRequest) returns (ItemReply) {}
+//    rpc AddItem (ItemRequest) returns (ItemReply) {}
+    rpc StreamItems (stream ItemRequest) returns (stream ItemReply) {}
+}
+
+message ItemRequest {
+    string itemId = 1;
+    string sessionId = 2;
+}
+
+message ItemReply {
+    int32 message = 1;
+    string sessionId = 2;
+}
