@@ -1,8 +1,10 @@
 package com.example.actor
 
 //#user-registry-actor
+import akka.NotUsed
 import akka.actor.typed.scaladsl.Behaviors
 import akka.actor.typed.{ActorRef, Behavior}
+import akka.stream.scaladsl.Sink
 import com.example.inventory.grpc.{ItemReply, ItemRequest}
 
 import scala.collection.immutable
@@ -35,6 +37,7 @@ object SessionActor {
 
           (1 to requestsNum).toList
             .map(_ => connectionActor ! ItemRequest("123", context.self.path.toStringWithoutAddress))
+
 
           SessionActor.session(responses, requestsNum, r)
         case RequestResponse(reply) =>

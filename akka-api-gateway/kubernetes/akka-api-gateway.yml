@@ -1,0 +1,67 @@
+---
+apiVersion: "apps/v1"
+kind: Deployment
+metadata:
+  name: "akka-api-gateway-v0-1-0-snapshot"
+  labels:
+    appName: akkaapigateway
+    appNameVersion: "akka-api-gateway-v0-1-0-snapshot"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      appNameVersion: "akka-api-gateway-v0-1-0-snapshot"
+  template:
+    metadata:
+      annotations:
+        "prometheus.io/scrape": "true"
+        "prometheus.io/scheme": http
+        "prometheus.io/path": "/"
+        "prometheus.io/port": "9001"
+      labels:
+        appName: akkaapigateway
+        appNameVersion: "akka-api-gateway-v0-1-0-snapshot"
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: akkaapigateway
+          image: "nolangrace/akka-api-gateway:0.1.0-SNAPSHOT"
+          command: ["/opt/docker/bin/quickstart-app"]
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8081
+              protocol: TCP
+            - name: metrics
+              containerPort: 9001
+              protocol: TCP
+          volumeMounts: []
+      volumes: []
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    appName: akkaapigateway
+  name: akkaapigateway
+spec:
+  ports:
+    - name: http
+      port: 8081
+      protocol: TCP
+      targetPort: 8081
+  selector:
+    appName: grpcservice
+---
+apiVersion: "extensions/v1beta1"
+kind: Ingress
+metadata:
+  name: httptogrpc
+spec:
+  rules:
+    - host: "superservice.com"
+      http:
+        paths:
+          - backend:
+              serviceName: httptogrpc
+              servicePort: 8081

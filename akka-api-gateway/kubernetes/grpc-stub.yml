@@ -1,0 +1,46 @@
+---
+apiVersion: "apps/v1"
+kind: Deployment
+metadata:
+  name: "grpcstub-v0-1-0-snapshot"
+  labels:
+    appName: grpcstub
+    appNameVersion: "grpcstub-v0-1-0-snapshot"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      appNameVersion: "grpcstub-v0-1-0-snapshot"
+  template:
+    metadata:
+      labels:
+        appName: grpcstub
+        appNameVersion: "grpcstub-v0-1-0-snapshot"
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: grpcstub
+          image: "nolangrace/akka-api-gateway:0.1.0-SNAPSHOT"
+          command: ["/opt/docker/bin/inventory-server"]
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              name: http
+          volumeMounts: []
+      volumes: []
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    appName: grpcstub
+  name: grpcstub
+spec:
+  ports:
+    - name: http
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+  selector:
+    appName: grpcstub
+
