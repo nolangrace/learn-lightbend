@@ -8,7 +8,7 @@ package inventory;
 
 service InventoryService {
 //    rpc GetItem (ItemRequest) returns (ItemReply) {}
-//    rpc AddItem (ItemRequest) returns (ItemReply) {}
+    rpc AddItem (ItemRequest) returns (ItemReply) {}
     rpc StreamItems (stream ItemRequest) returns (stream ItemReply) {}
 }
 

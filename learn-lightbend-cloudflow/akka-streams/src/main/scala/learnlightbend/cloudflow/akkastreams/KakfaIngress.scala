@@ -44,6 +44,7 @@ class KakfaIngress extends AkkaStreamlet {
 
     val TopicName = "test-topic"
 
+    //    val kafkaHost = "cloudflow-kafka-bootstrap.cloudflow.svc"
     val kafkaHost = "localhost"
     val kafkaPort = "9092"
 
@@ -56,12 +57,6 @@ class KakfaIngress extends AkkaStreamlet {
         .withProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest")
 
     val r = scala.util.Random
-
-    //    def runnableGraph = Source(0 to 100).map(x ⇒ {
-    //      log.info("Current NUm: " + x)
-    //
-    //      AggregatedCallStats(0L, 0L, 0.0, 0L)
-    //    }).to(plainSink(out))
 
     def runnableGraph = Consumer
       .committableSource(consumerSettings, Subscriptions.topics(TopicName))

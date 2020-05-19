@@ -22,8 +22,8 @@ lazy val learnlightbendcloudflow = appModule("learn-lightbend-cloudflow")
   .enablePlugins(CloudflowApplicationPlugin)
   .settings(commonSettings)
   .settings(
-    name := "learn-lightbend-cloudflow",
-    runLocalConfigFile := Some("learn-lightbend-cloudflow/main/resources/local.conf")
+    name := "learn-lightbend-cloudflow"
+//    runLocalConfigFile := Some("./learn-lightbend-cloudflow/src/main/resources/local.conf")
   )
   .dependsOn(akkaStreams, sparkAggregation)
 //end::docs-CloudflowApplicationPlugin-example[]
@@ -36,10 +36,12 @@ lazy val akkaStreams= appModule("akka-streams")
     .settings(
       commonSettings,
       libraryDependencies ++= Seq(
+        "com.typesafe.akka"         %% "akka-slf4j"             % "2.5.31",
         "com.typesafe.akka"         %% "akka-http-spray-json"   % "10.1.10",
         "ch.qos.logback"            %  "logback-classic"        % "1.2.3",
         "com.lightbend.akka" %% "akka-stream-alpakka-cassandra" % "1.1.2",
         "com.github.nosan" % "embedded-cassandra" % "3.0.1",
+        "com.lightbend.akka" %% "akka-stream-alpakka-elasticsearch" % "2.0.0",
         "org.scalatest"             %% "scalatest"              % "3.0.8"    % "test"
       )
     )

@@ -43,6 +43,7 @@ object SessionActor {
         case RequestResponse(reply) =>
           val newResponses = responses ::: List(reply)
 
+          println("Received Request: "+newResponses.size)
 
           if (newResponses.size == numberOfRequests) {
             replyTo ! ResponsePackage(newResponses.size)
